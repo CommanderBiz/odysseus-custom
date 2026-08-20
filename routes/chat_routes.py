@@ -1533,7 +1533,19 @@ def setup_chat_routes(
         # the heavy "do things on the computer" tools — otherwise the model
         # tries to shell out for a request that never needed it, then fails
         # (and looks broken when the shell is disabled).
-        if auto_escalated and not _workspace_agent_intent:
+        #
+        # FORK: CommanderBiz/odysseus-custom — admin users keep bash/file
+        # tools even on light auto-escalation. Ke'Shon runs this instance for
+        # real system work; intent-gating shell behind chat-mode classification
+        # made the agent report "shell not available" on legitimate requests.
+        # Admins get full toolset regardless of escalation category.
+        _is_admin_user = bool(
+            _user
+            and hasattr(request.app.state, 'auth_manager')
+            and request.app.state.auth_manager
+            and bool((request.app.state.auth_manager.get_privileges(_user) or {}).get("is_admin"))
+        )
+        if auto_escalated and not _workspace_agent_intent and not _is_admin_user:
             disabled_tools.update({
                 "bash", "python", "read_file", "write_file",
             })
