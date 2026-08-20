@@ -42,6 +42,19 @@ ALWAYS_AVAILABLE = frozenset({
     "ask_user",
     # Write back to the active plan (tick steps done / revise) during execution.
     "update_plan",
+    # FORK: CommanderBiz/odysseus-custom — shell/file tools are always in the
+    # toolset. Stock Odysseus gates bash behind RAG tool-retrieval relevance,
+    # which made shell availability non-deterministic ("shell isn't in my
+    # toolkit this turn") and broke real system work. Ke'Shon runs this fork
+    # for exactly that work, so bash/python/file tools stay unconditionally
+    # available. Tool *execution* is still gated by the per-turn disabled set
+    # and privilege checks; this only stops the RAG lottery from dropping them.
+    "bash",
+    "python",
+    "read_file",
+    "write_file",
+    "edit_file",
+    "search_chats",
 })
 
 # Tools that the Personal Assistant always has access to during scheduled
